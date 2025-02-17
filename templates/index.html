@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Team Performance</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        select, button { padding: 10px; margin: 10px 0; }
+        h2 { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏀 NBA Team Performance</h1>
+
+        <!-- Team Selection -->
+        <form method="get" action="/">
+            <label for="team">Select a Team:</label>
+            <select name="team_name" id="team" onchange="this.form.action='/dashboard/'+this.value; this.form.submit()">
+                <option value="">-- Choose a Team --</option>
+                {% for team in teams %}
+                <option value="{{ team.full_name }}" {% if selected_team_id == team.full_name %}selected{% endif %}>
+                    {{ team.full_name }}  
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Performance Stats -->
+        {% if performance and "error" not in performance %}
+            <h2>Performance Stats - {{ performance.team_name }}</h2>
+            <p><strong>Total Games:</strong> {{ performance.total_games_played }}</p>
+            <p><strong>Wins:</strong> {{ performance.wins }}</p>
+            <p><strong>Loss:</strong> {{ performance.losses }}</p>
+            <p><strong>Win Percentage:</strong> {{ performance.win_percent }}%</p>
+        {% elif performance and "error" in performance %}
+            <p style="color: red;">{{ performance.error }}</p>
+        {% endif %}
+
+        <!-- Players List -->
+        {% if players %}
+            <h2>Players</h2>
+            <ul>
+                {% for player in players %}
+                    <li>{{ player["first_name"] }} {{ player["last_name"] }}</li>
+                {% endfor %}
+            </ul>
+        {% elif performance and "error" not in performance %}
+            <p style="color: gray;">No players found for this team.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
